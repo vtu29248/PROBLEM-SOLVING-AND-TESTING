@@ -1,26 +1,71 @@
-class Solution {
-    public int lengthOfLongestSubstring(String s) {
-        int[] lastSeen = new int[128];
-        
-        // -1 means the character has not been seen
-        java.util.Arrays.fill(lastSeen, -1);
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
-        int left = 0;
-        int maxLength = 0;
+class Result {
 
-        for (int right = 0; right < s.length(); right++) {
-            char ch = s.charAt(right);
+    /*
+     * Complete the 'diagonalDifference' function below.
+     *
+     * The function is expected to return an INTEGER.
+     * The function accepts 2D_INTEGER_ARRAY arr as parameter.
+     */
 
-            // Move left past the previous occurrence
-            if (lastSeen[ch] >= left) {
-                left = lastSeen[ch] + 1;
-            }
+    public static int diagonalDifference(List<List<Integer>> arr) {
+        int n = arr.size();
 
-            lastSeen[ch] = right;
+        int primarySum = 0;
+        int secondarySum = 0;
 
-            maxLength = Math.max(maxLength, right - left + 1);
+        for (int i = 0; i < n; i++) {
+
+            // Primary diagonal
+            primarySum += arr.get(i).get(i);
+
+            // Secondary diagonal
+            secondarySum += arr.get(i).get(n - 1 - i);
         }
 
-        return maxLength;
+        return Math.abs(primarySum - secondarySum);
+    }
+
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int n = Integer.parseInt(bufferedReader.readLine().trim());
+
+        List<List<Integer>> arr = new ArrayList<>();
+
+        IntStream.range(0, n).forEach(i -> {
+            try {
+                arr.add(
+                    Stream.of(bufferedReader.readLine().replaceAll("\\s+$", "").split(" "))
+                        .map(Integer::parseInt)
+                        .collect(toList())
+                );
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        int result = Result.diagonalDifference(arr);
+
+        bufferedWriter.write(String.valueOf(result));
+        bufferedWriter.newLine();
+
+        bufferedReader.close();
+        bufferedWriter.close();
     }
 }
